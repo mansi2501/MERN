@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import Card from '../card/Card';
 
-function Post() {
-
+function Post({ currentPage, itemsPerPage, setTotalPosts }) {
     const [postData, setPostData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
 
     useEffect(() => {
         fetch('http://localhost:5000/post')
             .then(response => response.json())
             .then(json => {
                 setPostData(json.post);
+                setTotalPosts(json.post.length);
             });
     }, []);
+
+    const indexOfLastPost = currentPage * itemsPerPage;
+    const indexOfFirstPost = indexOfLastPost - itemsPerPage;
+    const currentPosts = postData.slice(indexOfFirstPost, indexOfLastPost);
 
     return (
         <div>
@@ -30,17 +32,24 @@ function Post() {
                     </a>
                 </div>
             </div>
+
             <div className="row">
-                {postData?.length > 0 ?
-                    (postData.map((post, index) => (
+                {currentPosts?.length > 0 ? (
+                    currentPosts.map((post, index) => (
                         <div className="col-md-4 col-sm-6 mb-4" key={index}>
-                            <Card image={post.image} title={post.title} description={post.description} likeCount="0" />
+                            <Card
+                                image={post.image}
+                                title={post.title}
+                                description={post.description}
+                                likeCount="0"
+                            />
                         </div>
-                    ))) :
-                    (<div className="col-12 text-center">
+                    ))
+                ) : (
+                    <div className="col-12 text-center">
                         <p>No posts available.</p>
-                    </div>)
-                }
+                    </div>
+                )}
             </div>
         </div>
     );
