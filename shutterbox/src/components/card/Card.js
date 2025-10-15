@@ -4,7 +4,7 @@ import { arrayBufferToBase64 } from '../function/Function';
 function Card({ image, title, description, likeCount }) {
 
     const convertImage = arrayBufferToBase64(image.data);
-    const imageSrc = `data:image/png;base64,${convertImage}`
+    const imageSrc = `data:image/png;base64,${convertImage}`;
 
     return (
         <div className="card d-block mx-auto" style={{ width: '18rem' }}>

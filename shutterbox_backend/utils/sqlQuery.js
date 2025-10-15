@@ -8,8 +8,8 @@ export const createPostTableQuery = `CREATE TABLE post_info(
 id SERIAL PRIMARY KEY,
 userId INT REFERENCES user_details(id) ON DELETE CASCADE,
 image BYTEA NOT NULL,
-title VARCHAR(100) NOT NULL,
-description VARCHAR(500) NOT NULL
+title VARCHAR(500) NOT NULL,
+description VARCHAR(5000) NOT NULL
 );`;
 
 export const allUserQuery = `SELECT * FROM user_details`;
