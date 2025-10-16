@@ -1,5 +1,6 @@
 import { query } from "../db/db.js";
 import { createUserQuery, createUserTableQuery, loginUserQuery } from "../utils/sqlQuery.js";
+// import { Resend } from 'resend';
 
 export async function createUser(req, res) {
     const { userName, email, password } = req.body;
@@ -16,6 +17,7 @@ export async function createUser(req, res) {
         console.log("User inserted:", newUser.rows[0]);
 
         res.status(200).json({
+            status: 200,
             message: "User registered successfully",
             user: {
                 id: newUser.rows[0].id,
@@ -49,6 +51,7 @@ export async function loginUser(req, res) {
         console.log("user", user);
 
         res.status(200).json({
+            status: 200,
             message: "Login successful",
             user: {
                 id: user.id,
@@ -61,3 +64,15 @@ export async function loginUser(req, res) {
         res.status(500).json({ message: "Server error" });
     }
 }
+
+// export async function forgotPassword(req, res) {
+
+// const resend = new Resend('re_ZDSJBKuo_84mwqYYdKuKJzygLkvpqUxEm');
+
+// resend.emails.send({
+//     from: 'onboarding@resend.dev',
+//     to: 'mansi.trivedi2501@gmail.com',
+//     subject: 'Hello World',
+//     html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+// });
+// }

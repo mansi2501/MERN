@@ -7,6 +7,8 @@ import Profile from './components/profile/Profile';
 import Post from './components/post/Post';
 import EditProfile from './components/profile/EditProfile';
 import AddPost from './components/post/AddPost';
+import ForgotPassword from './components/forgotPassword/ForgotPassword';
+import ResetPassword from './components/resetPassword/ResetPassword';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/posts" element={<Post />} />
           <Route path="/add-post" element={<AddPost />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </Router>
     </div>

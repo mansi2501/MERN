@@ -14,6 +14,8 @@ export const UpdateUserDetailSchema = Yup.object().shape({
     password: Yup.string().required("Password is Required"),
 })
 
+export const filterSchema = Yup.object().shape({ title: Yup.string().required("Title is Required"), })
+
 export const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email format').required('Email is Required'),
     password: Yup.string().required("Password is Required"),

@@ -18,6 +18,7 @@ export async function getUserDetails(req, res) {
         }
 
         res.status(200).json({
+            status: 200,
             message: "User details fetched successfully",
             user: getUserData.rows[0]
         })
@@ -44,6 +45,7 @@ export async function updateUserDetails(req, res) {
         }
 
         res.status(200).json({
+            status: 200,
             message: "User details Updated successfully",
             user: updateUserData.rows[0]
         })

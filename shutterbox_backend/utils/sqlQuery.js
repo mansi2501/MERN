@@ -2,14 +2,17 @@ export const createUserTableQuery = `CREATE TABLE user_details(
 id SERIAL PRIMARY KEY,
 name VARCHAR(50) NOT NULL UNIQUE,
 email VARCHAR(50) NOT NULL UNIQUE,
-password VARCHAR(50) NOT NULL);`;
+password VARCHAR(50) NOT NULL,
+created_at TIMESTAMP DEFAULT NOW()
+);`;
 
 export const createPostTableQuery = `CREATE TABLE post_info(
 id SERIAL PRIMARY KEY,
 userId INT REFERENCES user_details(id) ON DELETE CASCADE,
 image BYTEA NOT NULL,
 title VARCHAR(500) NOT NULL,
-description VARCHAR(5000) NOT NULL
+description VARCHAR(5000) NOT NULL,
+created_at TIMESTAMP DEFAULT NOW()
 );`;
 
 export const allUserQuery = `SELECT * FROM user_details`;

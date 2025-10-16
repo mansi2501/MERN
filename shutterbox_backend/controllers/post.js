@@ -2,15 +2,26 @@ import { query } from "../db/db.js";
 import { allPostQuery, createPostQuery, createPostTableQuery } from "../utils/sqlQuery.js";
 
 export async function getAllPost(req, res) {
+    const { title } = req.query;
+
     try {
         const tableCheck = await query(`SELECT to_regclass('post_info')`);
 
         if (!tableCheck.rows[0].to_regclass) {
             await query(createPostTableQuery);
         }
-        const allPost = await query(allPostQuery);
+        let queryText = allPostQuery;
+        const params = [];
+
+        if (typeof title === "string" && title.trim() !== "") {
+            queryText += ` WHERE title ILIKE $1`;
+            params.push(`%${title.trim()}%`);
+        }
+
+        const allPost = await query(queryText, params);
 
         res.status(200).json({
+            status: 200,
             message: "All Post Data",
             post: allPost.rows
         })
@@ -40,6 +51,7 @@ export async function addPost(req, res) {
         const newPost = await query(createPostQuery, [userId, image, title, description]);
 
         res.status(200).json({
+            status: 200,
             message: "Post Added succesfully",
             post: newPost.rows[0]
         })
