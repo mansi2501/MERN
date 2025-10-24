@@ -21,6 +21,15 @@ export const LoginSchema = Yup.object().shape({
     password: Yup.string().required("Password is Required"),
 })
 
+export const checkEmailSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email format').required('Email is Required'),
+})
+
+export const ResetPasswordSchema = Yup.object().shape({
+    password: Yup.string().required("Password is Required"),
+    confirmPassword: Yup.string().required("Confirm password is Required").oneOf([Yup.ref("password"), null], "confirm password and password must match"),
+})
+
 export const AddPostSchema = Yup.object().shape({
     image: Yup.mixed()
         .required("Image is Required")

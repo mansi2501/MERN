@@ -15,18 +15,24 @@ description VARCHAR(5000) NOT NULL,
 created_at TIMESTAMP DEFAULT NOW()
 );`;
 
+export const createPostCommentTableQuery = `CREATE TABLE post_comment_info();`;
+
 export const allUserQuery = `SELECT * FROM user_details`;
 
 export const getUserDetailsQuery = `SELECT * FROM user_details WHERE id=$1`;
 
 export const updateUserDetailQuery = `UPDATE user_details SET name=$1, password=COALESCE($2, password) WHERE id=$3 RETURNING *`;
 
-export const createPostCommentTableQuery = `CREATE TABLE post_comment_info();`;
-
 export const createUserQuery = `INSERT INTO user_details (name, email, password) VALUES($1, $2, $3) RETURNING *`;
 
 export const loginUserQuery = `SELECT * FROM user_details WHERE email = $1 AND password = $2;`;
 
+export const updatePasswordQuery = `UPDATE user_details SET password = $1, token = NULL, token_expiry = NULL WHERE token = $2 AND token_expiry > NOW() RETURNING *`;
+
+export const updateTokenQuery = `UPDATE user_details SET token = $1, token_expiry = $2 WHERE email = $3`;
+
+export const veryfyTokenQuery = `SELECT token_expiry FROM user_details WHERE token = $1`;
+
 export const allPostQuery = `SELECT * FROM post_info`;
 
-export const createPostQuery = `INSERT INTO post_info (userId, image, title, description) VALUES($1, $2, $3, $4) RETURNING *`;
+export const createPostQuery = `INSERT INTO post_info(userId, image, title, description) VALUES($1, $2, $3, $4) RETURNING * `;

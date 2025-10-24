@@ -1,48 +1,43 @@
 import { useState } from "react";
 import { useFormik } from "formik";
-import { LoginSchema } from "../../schema";
+import { checkEmailSchema } from "../../schema";
 import { useNavigate } from "react-router-dom";
 
 
 function ForgotPassword() {
     const navigate = useNavigate();
+    const userName = sessionStorage.getItem("username");
 
-    // const userData = {
-    //     email: "",
-    //     password: "",
-    // };
+    const userData = {
+        email: "",
+    };
 
-    // const formik = useFormik({
-    //     initialValues: userData,
-    //     validationSchema: LoginSchema,
-    //     onSubmit: async (values, { resetForm }) => {
-    //         try {
-    //             const response = await fetch("http://localhost:5000/auth/login", {
-    //                 method: "POST",
-    //                 headers: { "Content-Type": "application/json" },
-    //                 body: JSON.stringify({
-    //                     email: values.email,
-    //                     password: values.password,
-    //                 }),
-    //             });
-    //             // alert(JSON.stringify(values, null, 2));
-    //             const data = await response.json();
-    //             sessionStorage.setItem("username", data?.user?.name)
-    //             sessionStorage.setItem("userId", data?.user?.id)
-
-    //             if (response.status === 200) {
-    //                 navigate("/dashboard");
-    //             }
-    //             else {
-    //                 resetForm({ values: userData });
-    //                 navigate("/");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error: ", error);
-    //             alert("Login Failed!!!");
-    //         }
-    //     },
-    // });
+    const formik = useFormik({
+        initialValues: userData,
+        validationSchema: checkEmailSchema,
+        onSubmit: async (values, { resetForm }) => {
+            try {
+                const response = await fetch("http://localhost:5000/auth/resend", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: values.email,
+                        userName,
+                    }),
+                });
+                const data = await response.json();
+                if (response.status === 200) {
+                    resetForm({ values: userData });
+                    navigate("/verify-email")
+                }
+                else {
+                    resetForm({ values: userData })
+                }
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        },
+    });
 
 
     return (
@@ -64,19 +59,18 @@ function ForgotPassword() {
                 <small className="text-start mb-4">If you've forgotten your password, please enter your email to reset it.</small>
 
                 {/* Form */}
-                <form>
-                    {/* onSubmit={formik.handleSubmit}> */}
+                <form onSubmit={formik.handleSubmit}>
                     <div className="mb-3 text-start">
                         <label className="form-label text-primary">Enter Your Registered Email</label>
                         <input
                             type="email"
                             name="email"
-                            // value={formik.values.email}
-                            // onChange={formik.handleChange}
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
                             placeholder="Enter email"
                             className="form-control"
                         />
-                        {/* {formik.errors.email && <div className="text-danger">{formik.errors.email}</div>} */}
+                        {formik.errors.email && <div className="text-danger">{formik.errors.email}</div>}
                     </div>
 
                     <button type="submit" className="btn btn-primary w-100">

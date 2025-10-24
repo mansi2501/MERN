@@ -4,6 +4,12 @@ import cors from "cors";
 import authRouter from "./routes/auth.js";
 import postRouter from "./routes/post.js";
 import userRouter from "./routes/user.js";
+import fetch, { Headers, Request, Response } from "node-fetch";
+
+global.fetch = fetch;
+global.Headers = Headers;
+global.Request = Request;
+global.Response = Response;
 
 const app = express();
 app.use(cors());

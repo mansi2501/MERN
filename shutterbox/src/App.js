@@ -9,6 +9,7 @@ import EditProfile from './components/profile/EditProfile';
 import AddPost from './components/post/AddPost';
 import ForgotPassword from './components/forgotPassword/ForgotPassword';
 import ResetPassword from './components/resetPassword/ResetPassword';
+import VerifyEmail from './components/verifyEmail/VerifyEmail';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/add-post" element={<AddPost />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path='/verify-email' element={<VerifyEmail />} />
         </Routes>
       </Router>
     </div>

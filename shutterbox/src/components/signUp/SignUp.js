@@ -19,6 +19,8 @@ function SignUp() {
         initialValues: userData,
         validationSchema: RegistrationSchema,
         onSubmit: async (values, { resetForm }) => {
+            console.log("values", values);
+
             try {
                 const response = await fetch("http://localhost:5000/auth/register", {
                     method: "POST",
@@ -30,8 +32,8 @@ function SignUp() {
                     }),
                 });
                 const data = await response.json();
-                // console.log("response Data", data);
-                // alert(JSON.stringify(values, null, 2));
+                console.log("data", data);
+
                 resetForm({ values: userData });
                 navigate("/")
             } catch (error) {
