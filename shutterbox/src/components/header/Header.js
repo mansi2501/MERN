@@ -38,7 +38,17 @@ function Header() {
                                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li><a className="dropdown-item" href="/profile">Profile</a></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><a className="dropdown-item" href="/">Logout</a></li>
+                                    <li> <button
+                                        className="dropdown-item text-danger"
+                                        onClick={() => {
+                                            sessionStorage.removeItem("userId");
+                                            sessionStorage.removeItem("username");// clear login info
+                                            // sessionStorage.removeItem("token"); // if using tokens
+                                            window.location.href = "/"; // redirect to login
+                                        }}
+                                    >
+                                        Logout
+                                    </button></li>
                                 </ul>
                             </li>
                         </ul>

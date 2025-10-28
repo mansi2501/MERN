@@ -11,6 +11,8 @@ import ForgotPassword from './components/forgotPassword/ForgotPassword';
 import ResetPassword from './components/resetPassword/ResetPassword';
 import VerifyEmail from './components/verifyEmail/VerifyEmail';
 import PageNotFound from './components/pageNotFound/PageNotFound';
+import MainLayout from './components/layout/MainLayout';
+import PrivateRoute from './components/layout/PrivateRoute';
 
 function App() {
   return (
@@ -19,18 +21,24 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/posts" element={<Post />} />
-          <Route path="/add-post" element={<AddPost />} />
+
+          <Route element={<PrivateRoute />}>
+            <Route element={<MainLayout />} >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/posts" element={<Post />} />
+              <Route path="/add-post" element={<AddPost />} />
+            </Route>
+          </Route>
+
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path='/verify-email' element={<VerifyEmail />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
-    </div>
+    </div >
   );
 }
 

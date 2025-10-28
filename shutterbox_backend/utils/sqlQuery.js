@@ -3,7 +3,8 @@ id SERIAL PRIMARY KEY,
 name VARCHAR(50) NOT NULL UNIQUE,
 email VARCHAR(50) NOT NULL UNIQUE,
 password VARCHAR(50) NOT NULL,
-created_at TIMESTAMP DEFAULT NOW()
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
 );`;
 
 export const createPostTableQuery = `CREATE TABLE post_info(
@@ -14,7 +15,8 @@ title VARCHAR(500) NOT NULL,
 description VARCHAR(5000) NOT NULL,
 likes INT DEFAULT 0,
 dislikes INT DEFAULT 0,
-created_at TIMESTAMP DEFAULT NOW()
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
 );`;
 
 export const createPostReactionTableQuery = `CREATE TABLE IF NOT EXISTS post_reactions(
@@ -23,6 +25,8 @@ export const createPostReactionTableQuery = `CREATE TABLE IF NOT EXISTS post_rea
     userId INT,
     reactionType VARCHAR(10),
     UNIQUE(postId, userId)
+	created_at TIMESTAMP DEFAULT NOW(),
+	updated_at TIMESTAMP DEFAULT NOW()
 );`;
 
 export const createPostCommentTableQuery = `CREATE TABLE post_comment_info();`;

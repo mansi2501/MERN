@@ -6,7 +6,8 @@ import Button from '../layout/Button';
 
 function Post({ currentPage, itemsPerPage, setTotalPosts }) {
     const [postData, setPostData] = useState([]);
-    const [filterURL, setFilterURL] = useState("")
+    const [filterURL, setFilterURL] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     const userId = sessionStorage.getItem("userId");
 
@@ -32,14 +33,38 @@ function Post({ currentPage, itemsPerPage, setTotalPosts }) {
 
     return (
         <>
-            <div className="container d-flex justify-content-end mt-4">
-                <div className="text-end text-sm-center text-md-end mb-3">
-                    <Button href={"/add-post"} />
+            <div className="container mt-4">
+                <div className="row align-items-center mb-4">
+                    {/* === Left side: Search Box === */}
+                    <div className="col-md-6 col-sm-12 mb-2 mb-md-0">
+                        <div className="position-relative" style={{ maxWidth: "350px" }}>
+                            <input
+                                type="text"
+                                placeholder="Search by title..."
+                                className="form-control ps-5 rounded-pill shadow-sm"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <i
+                                className="bi bi-search position-absolute"
+                                style={{
+                                    left: "15px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    color: "#6c757d",
+                                }}
+                            ></i>
+                        </div>
+                    </div>
+
+                    {/* === Right side: Buttons === */}
+                    <div className="col-md-6 col-sm-12 text-md-end text-center">
+                        <div className="d-inline-flex gap-2">
+                            <Button href={"/add-post"} />
+                            <Filter setFilterURL={setFilterURL} />
+                        </div>
+                    </div>
                 </div>
-                <div className='text-end text-sm-center text-md-end mb-3'>
-                    <Filter setFilterURL={setFilterURL} />
-                </div>
-                {/* <div className="text-end text-sm-center text-md-end mb-3"><ResetFilter /></div> */}
             </div>
 
             <div className="row">

@@ -14,7 +14,6 @@ function Dashboard() {
 
     return (
         <>
-            <Header />
             <Post currentPage={currentPage} itemsPerPage={itemsPerPage} setTotalPosts={setTotalPosts} />
             {totalPages > 1 && (
                 <Pagination
@@ -22,7 +21,7 @@ function Dashboard() {
                     totalPages={totalPages}
                     onPageChange={setCurrentPage}
                 />)}
-            <Footer />
+
         </>
     );
 }
