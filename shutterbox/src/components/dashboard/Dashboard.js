@@ -10,7 +10,6 @@ function Dashboard() {
     const itemsPerPage = 4;
 
     const [totalPosts, setTotalPosts] = useState(0);
-
     const totalPages = Math.ceil(totalPosts / itemsPerPage);
 
     return (

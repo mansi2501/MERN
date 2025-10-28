@@ -47,7 +47,6 @@ export const allPostQuery = `SELECT * FROM post_info`;
 
 export const createPostQuery = `INSERT INTO post_info(userId, image, title, description) VALUES($1, $2, $3, $4) RETURNING * `;
 
-export const allPostReactionQuery = `SELECT * FROM post_reactions WHERE postId=$1 AND userId=$2`;
 
 export const getAllUserPostReactionQuery = `SELECT postId, reactionType FROM post_reactions WHERE userId=$1`;
 
@@ -62,3 +61,15 @@ export const deletePostReactionQuery = `DELETE FROM post_reactions WHERE postId 
 export const allLikePostReactionCountQuery = `SELECT COUNT(*) FROM post_reactions WHERE postId = $1 AND reactionType = 'like'`;
 
 export const allDislikePostReactionCountQuery = `SELECT COUNT(*) FROM post_reactions WHERE postId = $1 AND reactionType = 'dislike'`;
+
+export const allPostReactionsByUserQuery = `SELECT allposts.*, postreacts.userid as likedByUserId, postreacts.reactiontype,
+  	CASE 
+		WHEN postreacts.reactiontype = 'like' then true 
+		when postreacts.reactiontype = 'dislike' then false 
+		ELSE null
+    END AS hasLiked
+	from post_info as allPosts
+	left join post_reactions as postreacts on postreacts.postid = allPosts.id
+		AND postreacts.userid = $1;`
+
+export const allPostReactionQuery = `SELECT * FROM post_reactions WHERE postId=$1 AND userId=$2`;

@@ -1,5 +1,5 @@
 import { query } from "../db/db.js";
-import { addPostReactionQuery, allDislikePostReactionCountQuery, allLikePostReactionCountQuery, allPostQuery, allPostReactionQuery, createPostQuery, createPostReactionTableQuery, createPostTableQuery, deletePostReactionQuery, updatePostInfoReactionQuery, updatePostReactionQuery } from "../utils/sqlQuery.js";
+import { addPostReactionQuery, allDislikePostReactionCountQuery, allLikePostReactionCountQuery, allPostQuery, allPostReactionQuery, allPostReactionsByUserQuery, createPostQuery, createPostReactionTableQuery, createPostTableQuery, deletePostReactionQuery, updatePostInfoReactionQuery, updatePostReactionQuery } from "../utils/sqlQuery.js";
 
 export async function getAllPost(req, res) {
     const { title } = req.query;
@@ -84,16 +84,12 @@ export async function postReactions(req, res) {
             }
             else {
                 const UpdeatePostReactionData = await query(updatePostReactionQuery, [reactionType, postId, userId])
-                console.log("Update", UpdeatePostReactionData);
-
+                // console.log("Update", UpdeatePostReactionData);
             }
         }
         // Count total likes & dislikes for this post
         const likeCount = await query(allLikePostReactionCountQuery, [postId]);
-        console.log("likeCount", likeCount, likeCount?.rows[0]?.count);
-
         const dislikeCount = await query(allDislikePostReactionCountQuery, [postId]);
-        console.log("dislikeCount", dislikeCount?.rows[0]?.count);
 
         await query(updatePostInfoReactionQuery, [likeCount?.rows[0]?.count, dislikeCount?.rows[0]?.count, postId]);
 
@@ -110,19 +106,19 @@ export async function postReactions(req, res) {
 }
 
 export async function getUserPostReaction(req, res) {
-    const postId = req.params.id;
     const userId = req.params.userId;
 
     try {
-        const result = await query(allPostReactionQuery, [postId, userId]);
+        const result = await query(allPostReactionsByUserQuery, [userId]);
+        console.log("result", result);
 
         if (result.rows.length > 0) {
             res.status(200).json({
-                reactionType: result.rows[0].reactiontype
+                data: result.rows
             });
         } else {
             res.status(200).json({
-                reactionType: null
+                data: null
             });
         }
     } catch (error) {

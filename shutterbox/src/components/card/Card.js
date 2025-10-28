@@ -1,34 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { arrayBufferToBase64 } from '../function/Function';
 
-function Card({ postId, image, title, description, likeCount, dislikeCount }) {
+function Card({ postId, image, title, description, likeCount, dislikeCount, hasLiked }) {
 
     const [likes, setLikes] = useState(likeCount || 0);
     const [dislikes, setDislikes] = useState(dislikeCount || 0);
-    const [userReaction, setUserReaction] = useState(null); // "like" | "dislike" | null
+    const [userReaction, setUserReaction] = useState(hasLiked == true ? "like" : hasLiked == false ? "dislike" : null); // "like" | "dislike" | null
 
     const userId = sessionStorage.getItem("userId");
     const convertImage = arrayBufferToBase64(image.data);
     const imageSrc = `data:image/png;base64,${convertImage}`;
 
-    useEffect(() => {
-        const fetchUserReaction = async () => {
-            try {
-                const response = await fetch(`http://localhost:5000/post/${postId}/reaction/${userId}`);
-                const data = await response.json();
-
-                if (data.reactionType) {
-                    setUserReaction(data.reactionType);
-                }
-            } catch (err) {
-                console.error("Failed to fetch user reaction:", err);
-            }
-        };
-
-        if (userId && postId) {
-            fetchUserReaction();
-        }
-    }, [postId, userId]);
+    console.log("hasLiked", hasLiked);
 
 
     const reactToPost = async (type) => {

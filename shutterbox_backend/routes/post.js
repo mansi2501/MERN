@@ -13,6 +13,7 @@ router.get("/:id/reaction", postReactions);
 router.post("/:id/reaction", postReactions);
 router.put("/:id/reaction", postReactions);
 router.delete("/:id/reaction", postReactions);
-router.get("/:id/reaction/:userId", getUserPostReaction)
+router.get("/reaction/:userId", getUserPostReaction);
+// router.get("/:id/reaction/:userId", getUserPostReaction)
 
 export default router;

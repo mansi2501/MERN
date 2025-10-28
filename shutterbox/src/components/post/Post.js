@@ -2,25 +2,29 @@ import { useEffect, useState } from 'react';
 import Card from '../card/Card';
 import Filter from '../layout/Filter';
 import Button from '../layout/Button';
-import ResetFilter from '../layout/ResetFilter';
+// import ResetFilter from '../layout/ResetFilter';
 
 function Post({ currentPage, itemsPerPage, setTotalPosts }) {
     const [postData, setPostData] = useState([]);
     const [filterURL, setFilterURL] = useState("")
 
-    const apiURL = 'http://localhost:5000/post';
+    const userId = sessionStorage.getItem("userId");
 
     useEffect(() => {
-        const urlToFetch = filterURL && filterURL.includes("?title=") ? filterURL : apiURL;
-        fetch(urlToFetch)
-            .then(response => response.json())
-            .then(json => {
-                setPostData(json.post);
-                setTotalPosts(json.post.length);
-            })
-            .catch(err => console.error("Error fetching posts:", err));
-    }, [filterURL])
-
+        const fetchPosts = async () => {
+            try {
+                const urlToFetch = filterURL && filterURL.includes("?title=") ? filterURL : `http://localhost:5000/post/reaction/${userId}`;
+                const response = await fetch(urlToFetch)
+                const json = await response.json();
+                setPostData(json.data || []);
+                setTotalPosts(json.data.length || 0);
+            }
+            catch {
+                console.error("Error fetching posts:", err);
+            }
+        }
+        if (userId) fetchPosts();
+    }, [filterURL, userId, currentPage])
 
     const indexOfLastPost = currentPage * itemsPerPage;
     const indexOfFirstPost = indexOfLastPost - itemsPerPage;
@@ -49,6 +53,7 @@ function Post({ currentPage, itemsPerPage, setTotalPosts }) {
                                 description={post.description}
                                 likeCount={post.likes}
                                 dislikeCount={post.dislikes}
+                                hasLiked={post.hasliked}
                             />
                         </div>
                     ))
