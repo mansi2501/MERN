@@ -10,6 +10,7 @@ import AddPost from './components/post/AddPost';
 import ForgotPassword from './components/forgotPassword/ForgotPassword';
 import ResetPassword from './components/resetPassword/ResetPassword';
 import VerifyEmail from './components/verifyEmail/VerifyEmail';
+import PageNotFound from './components/pageNotFound/PageNotFound';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path='/verify-email' element={<VerifyEmail />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
     </div>
