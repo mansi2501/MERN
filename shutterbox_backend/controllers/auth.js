@@ -40,22 +40,31 @@ export async function createUser(req, res) {
 
 export async function loginUser(req, res) {
     const { email, password } = req.body;
+
     try {
+        // Check if table exists
         const tableCheck = await query(`SELECT to_regclass('user_details')`);
         if (!tableCheck.rows[0].to_regclass) {
             return res.status(400).json({ message: "User table does not exist. Please register first." });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await query(loginUserQuery, [email.trim(), hashedPassword]);
-        console.log("Login query result:", result.rows);
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch)
-            return res.status(401).json({ message: "Invalid email or password" });
-
+        // 1️⃣ Fetch user by email only (DO NOT hash password here)
+        const result = await query(loginUserQuery, [email.trim()]);
         const user = result.rows[0];
 
+        if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // 2️⃣ Compare plain password with hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        // 3️⃣ Also allow plain text password (temporary fallback)
+        if (!isMatch && user.password !== password) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // 4️⃣ Successful login
         res.status(200).json({
             status: 200,
             message: "Login successful",
@@ -63,7 +72,7 @@ export async function loginUser(req, res) {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-            }
+            },
         });
     } catch (error) {
         console.error("Login error:", error);

@@ -1,5 +1,5 @@
 import { query } from "../db/db.js";
-import { allPostQuery, createPostQuery, createPostTableQuery } from "../utils/sqlQuery.js";
+import { addPostReactionQuery, allDislikePostReactionCountQuery, allLikePostReactionCountQuery, allPostQuery, allPostReactionQuery, createPostQuery, createPostReactionTableQuery, createPostTableQuery, deletePostReactionQuery, updatePostInfoReactionQuery, updatePostReactionQuery } from "../utils/sqlQuery.js";
 
 export async function getAllPost(req, res) {
     const { title } = req.query;
@@ -62,3 +62,71 @@ export async function addPost(req, res) {
     }
 }
 
+export async function postReactions(req, res) {
+    const { userId, reactionType } = req.body;
+    const postId = req.params.id;
+
+    try {
+        const tableCheck = await query(`SELECT to_regclass('post_reactions')`);
+
+        if (!tableCheck.rows[0].to_regclass) {
+            await query(createPostReactionTableQuery);
+        }
+
+        const allPostReactionData = await query(allPostReactionQuery, [postId, userId]);
+
+        if (allPostReactionData?.rows?.length <= 0) {
+            const AddPostReactionData = await query(addPostReactionQuery, [reactionType, postId, userId])
+        }
+        else {
+            if (allPostReactionData?.rows[0]?.reactiontype === reactionType) {
+                const deletePostReactionData = await query(deletePostReactionQuery, [postId, userId])
+            }
+            else {
+                const UpdeatePostReactionData = await query(updatePostReactionQuery, [reactionType, postId, userId])
+                console.log("Update", UpdeatePostReactionData);
+
+            }
+        }
+        // Count total likes & dislikes for this post
+        const likeCount = await query(allLikePostReactionCountQuery, [postId]);
+        console.log("likeCount", likeCount, likeCount?.rows[0]?.count);
+
+        const dislikeCount = await query(allDislikePostReactionCountQuery, [postId]);
+        console.log("dislikeCount", dislikeCount?.rows[0]?.count);
+
+        await query(updatePostInfoReactionQuery, [likeCount?.rows[0]?.count, dislikeCount?.rows[0]?.count, postId]);
+
+        res.status(200).json({
+            status: 200,
+            message: "Post Reaction Updated Successfully!!!",
+            likesCount: parseInt(likeCount?.rows[0]?.count),
+            dislikeCount: parseInt(dislikeCount?.rows[0]?.count),
+        })
+    } catch (error) {
+        console.log("Error", error);
+        res.status(500).send("server error");
+    }
+}
+
+export async function getUserPostReaction(req, res) {
+    const postId = req.params.id;
+    const userId = req.params.userId;
+
+    try {
+        const result = await query(allPostReactionQuery, [postId, userId]);
+
+        if (result.rows.length > 0) {
+            res.status(200).json({
+                reactionType: result.rows[0].reactiontype
+            });
+        } else {
+            res.status(200).json({
+                reactionType: null
+            });
+        }
+    } catch (error) {
+        console.error("Error fetching user reaction:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}

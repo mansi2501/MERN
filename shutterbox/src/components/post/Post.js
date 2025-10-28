@@ -21,6 +21,7 @@ function Post({ currentPage, itemsPerPage, setTotalPosts }) {
             .catch(err => console.error("Error fetching posts:", err));
     }, [filterURL])
 
+
     const indexOfLastPost = currentPage * itemsPerPage;
     const indexOfFirstPost = indexOfLastPost - itemsPerPage;
     const currentPosts = postData.slice(indexOfFirstPost, indexOfLastPost);
@@ -29,7 +30,7 @@ function Post({ currentPage, itemsPerPage, setTotalPosts }) {
         <>
             <div className="container d-flex justify-content-end mt-4">
                 <div className="text-end text-sm-center text-md-end mb-3">
-                    <Button href={"/"} />
+                    <Button href={"/add-post"} />
                 </div>
                 <div className='text-end text-sm-center text-md-end mb-3'>
                     <Filter setFilterURL={setFilterURL} />
@@ -39,13 +40,15 @@ function Post({ currentPage, itemsPerPage, setTotalPosts }) {
 
             <div className="row">
                 {currentPosts?.length > 0 ? (
-                    currentPosts.map((post, index) => (
-                        <div className="col-md-3 col-sm-6 mb-4" key={index}>
+                    currentPosts.map((post) => (
+                        <div className="col-md-3 col-sm-6 mb-4" key={post.id}>
                             <Card
+                                postId={post.id}
                                 image={post.image}
                                 title={post.title}
                                 description={post.description}
-                                likeCount="0"
+                                likeCount={post.likes}
+                                dislikeCount={post.dislikes}
                             />
                         </div>
                     ))
