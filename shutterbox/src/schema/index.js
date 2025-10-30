@@ -11,7 +11,7 @@ export const RegistrationSchema = Yup.object().shape({
 export const UpdateUserDetailSchema = Yup.object().shape({
     userName: Yup.string().required('User Name is Required'),
     email: Yup.string().email('Invalid email format').required('Email is Required'),
-    password: Yup.string().required("Password is Required"),
+    // password: Yup.string().required("Password is Required"),
 })
 
 export const filterSchema = Yup.object().shape({ title: Yup.string().required("Title is Required"), })

@@ -23,7 +23,7 @@ export async function getAllPost(req, res) {
         res.status(200).json({
             status: 200,
             message: "All Post Data",
-            post: allPost.rows
+            data: allPost.rows
         })
     } catch (error) {
         console.log(error);
@@ -110,7 +110,6 @@ export async function getUserPostReaction(req, res) {
 
     try {
         const result = await query(allPostReactionsByUserQuery, [userId]);
-        console.log("result", result);
 
         if (result.rows.length > 0) {
             res.status(200).json({

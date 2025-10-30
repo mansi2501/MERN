@@ -30,7 +30,7 @@ export async function getUserDetails(req, res) {
 
 export async function updateUserDetails(req, res) {
     const { id } = req.params;
-    const { name, password } = req.body
+    const { name } = req.body
     try {
 
         const tableCheck = await query(`SELECT to_regclass('user_details')`);
@@ -38,7 +38,7 @@ export async function updateUserDetails(req, res) {
         if (!tableCheck.rows[0].to_regclass) {
             await query(createUserTableQuery);
         }
-        const updateUserData = await query(updateUserDetailQuery, [name, password || null, Number(id)]);
+        const updateUserData = await query(updateUserDetailQuery, [name, Number(id)]);
 
         if (updateUserData.rowCount === 0) {
             return res.status(404).json({ message: "User not found!!" })

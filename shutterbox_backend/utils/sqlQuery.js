@@ -35,7 +35,8 @@ export const allUserQuery = `SELECT * FROM user_details`;
 
 export const getUserDetailsQuery = `SELECT * FROM user_details WHERE id=$1`;
 
-export const updateUserDetailQuery = `UPDATE user_details SET name=$1, password=COALESCE($2, password) WHERE id=$3 RETURNING *`;
+// export const updateUserDetailQuery = `UPDATE user_details SET name=$1, password=COALESCE($2, password) WHERE id=$3 RETURNING *`;
+export const updateUserDetailQuery = `UPDATE user_details SET name=$1 WHERE id=$2 RETURNING *`;
 
 export const createUserQuery = `INSERT INTO user_details (name, email, password) VALUES($1, $2, $3) RETURNING *`;
 

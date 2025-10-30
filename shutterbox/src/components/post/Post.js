@@ -2,25 +2,38 @@ import { useEffect, useState } from 'react';
 import Card from '../card/Card';
 import Filter from '../layout/Filter';
 import Button from '../layout/Button';
+import { useNavigate } from 'react-router-dom';
 // import ResetFilter from '../layout/ResetFilter';
 
 function Post({ currentPage, itemsPerPage, setTotalPosts }) {
     const [postData, setPostData] = useState([]);
     const [filterURL, setFilterURL] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const navigate = useNavigate();
 
     const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
                 const urlToFetch = filterURL && filterURL.includes("?title=") ? filterURL : `http://localhost:5000/post/reaction/${userId}`;
-                const response = await fetch(urlToFetch)
+
+                const response = await fetch(urlToFetch, { headers: { "Authorization": `Bearer ${token}` } })
+                if (response.status === 403 || response.status === 401) {
+                    const data = await response.json();
+
+                    if (data.message === "Access denied. No token provided." || data.message === "Invalid or expired token.") {
+                        sessionStorage.clear();
+                        navigate("/");
+                        return;
+                    }
+                }
                 const json = await response.json();
-                setPostData(json.data || []);
-                setTotalPosts(json.data.length || 0);
+                setPostData(json?.data || []);
+                setTotalPosts(json?.data?.length || 0);
             }
-            catch {
+            catch (err) {
                 console.error("Error fetching posts:", err);
             }
         }

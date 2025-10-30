@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 function AddPost() {
     const navigate = useNavigate();
-    const userId = sessionStorage.getItem("userId")
+    const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
 
     const postData = {
         image: "",
@@ -27,9 +28,19 @@ function AddPost() {
 
                 const response = await fetch("http://localhost:5000/post/add", {
                     method: "POST",
-                    //headers: { "Content-Type": "multipart/form-data" },
+                    headers: { "Authorization": `Bearer ${token}` },
                     body: formData,
                 });
+
+                if (response.status === 403 || response.status === 401) {
+                    const data = await response.json();
+
+                    if (data.message === "Access denied. No token provided." || data.message === "Invalid or expired token.") {
+                        sessionStorage.clear();
+                        navigate("/");
+                        return;
+                    }
+                }
                 const data = await response.json();
 
                 if (response.status === 200) {

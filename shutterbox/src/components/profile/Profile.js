@@ -7,12 +7,34 @@ function Profile() {
     const userId = sessionStorage.getItem("userId");
 
     useEffect(() => {
-        fetch(`http://localhost:5000/user/${userId}`)
-            .then(response => response.json())
-            .then(json => {
-                setUserData(json.user);
-            });
-    }, [])
+        const fetchUser = async () => {
+            const response = await fetch(`http://localhost:5000/user/${userId}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    // include token if your API requires authentication
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+            }).then(response => response.json()).then(json => {
+                setUserData(json.user)
+            })
+
+            console.log("RES", response);
+
+
+            if (response?.status === 403 || response?.status === 401) {
+                const data = await response.json();
+
+                if (data.message === "Access denied. No token provided." || data.message === "Invalid or expired token.") {
+                    sessionStorage.clear();
+                    navigate("/");
+                    return;
+                }
+            }
+        }
+
+        fetchUser();
+
+    }, [userId])
 
     return (
         <>
@@ -27,6 +49,7 @@ function Profile() {
                                         <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
                                             className="rounded-circle img-fluid" style={{ width: '100px' }} />
                                     </div>
+                                    {console.log("user name", userData)}
                                     <h4 className="mb-2">{userData?.name?.charAt(0).toUpperCase() + userData?.name
                                         ?.slice(1).toLowerCase()}</h4>
                                     <p className="text-muted mb-4">@User<span className="mx-2">|</span> <a

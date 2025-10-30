@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../header/Header';
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { UpdateUserDetailSchema } from '../../schema';
@@ -7,22 +6,42 @@ import { UpdateUserDetailSchema } from '../../schema';
 function EditProfile() {
 
     const [userData, setUserData] = useState([])
-    const [showPassword, setShowPassword] = useState(false);
+    // const [showPassword, setShowPassword] = useState(false);
     const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:5000/user/${userId}`)
-            .then(response => response.json())
-            .then(json => {
-                setUserData(json.user);
-            });
-    }, [])
+        const fetchUser = async () => {
+            const response = await fetch(`http://localhost:5000/user/${userId}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    // include token if your API requires authentication
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+            }).then(response => response.json()).then(json => {
+                setUserData(json.user)
+            })
+
+            if (response?.status === 403 || response?.status === 401) {
+                const data = await response.json();
+
+                if (data.message === "Access denied. No token provided." || data.message === "Invalid or expired token.") {
+                    sessionStorage.clear();
+                    navigate("/");
+                    return;
+                }
+            }
+        }
+
+        fetchUser();
+
+    }, [userId])
 
     const userDetails = {
         userName: userData?.name || "",
         email: userData?.email || "",
-        password: userData?.password || "",
+        // password: userData?.password || "",
     };
 
     const formik = useFormik({
@@ -33,14 +52,27 @@ function EditProfile() {
             try {
                 const response = await fetch(`http://localhost:5000/user/${userId}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
                     body: JSON.stringify({
                         id: userId,
                         name: values.userName,
                         email: values.email,
-                        password: values.password,
+                        // password: values.password,
                     }),
                 });
+
+                if (response.status === 403 || response.status === 401) {
+                    const data = await response.json();
+
+                    if (data.message === "Access denied. No token provided." || data.message === "Invalid or expired token.") {
+                        sessionStorage.clear();
+                        navigate("/");
+                        return;
+                    }
+                }
                 const data = await response.json();
 
                 if (response.ok) {
@@ -97,7 +129,7 @@ function EditProfile() {
                                             {formik.errors.email && <div className="text-danger">{formik.errors.email}</div>}
                                         </div>
 
-                                        <div className="mb-3 text-start position-relative">
+                                        {/* <div className="mb-3 text-start position-relative">
                                             <input
                                                 type={showPassword ? "text" : "password"}
                                                 name="password"
@@ -121,7 +153,7 @@ function EditProfile() {
                                                 onClick={() => setShowPassword(!showPassword)}
                                             ></i>
                                             {formik.errors.password && <div className="text-danger">{formik.errors.password}</div>}
-                                        </div>
+                                        </div> */}
 
                                         <button type="submit" data-mdb-button-init data-mdb-ripple-init className="btn btn-primary btn-rounded btn-lg">
                                             Update

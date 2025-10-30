@@ -3,13 +3,11 @@ import { Navigate, Outlet } from "react-router-dom";
 
 function PrivateRoute() {
 
-    //    const token = sessionStorage.getItem("token");
-    // return token ? <Outlet /> : <Navigate to="/" replace />;
     const [isAuthenticated, setIsAuthenticated] = useState(null);
 
     useEffect(() => {
-        const userId = sessionStorage.getItem("userId");
-        setIsAuthenticated(!!userId);
+        const token = sessionStorage.getItem("token");
+        setIsAuthenticated(!!token);
     }, []);
 
     if (isAuthenticated === null) {

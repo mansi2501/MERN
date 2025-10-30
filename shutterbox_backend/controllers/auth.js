@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import mjml2html from 'mjml';
 import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function createUser(req, res) {
@@ -64,15 +65,26 @@ export async function loginUser(req, res) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
+        console.log("Access expires in:", process.env.JWT_ACCESS_EXPIRES_IN);
+
+        const token = jwt.sign(
+            { id: user.id, email: user.email, name: user.name },
+            process.env.JWT_ACCESS_SECRET_KEY,
+            { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1h" }
+        );
+
+        const refreshToken = jwt.sign(
+            { id: user.id, email: user.email, name: user.name },
+            process.env.JWT_REFRESH_SECRET_KEY,
+            { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d" }
+        );
+
         // 4️⃣ Successful login
         res.status(200).json({
             status: 200,
             message: "Login successful",
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-            },
+            access_token: token,
+            refresh_token: refreshToken,
         });
     } catch (error) {
         console.error("Login error:", error);
@@ -151,7 +163,7 @@ export async function sendEmail(req, res) {
     }
 }
 
-export async function verifyToken(req, res) {
+export async function verifyResetPasswordToken(req, res) {
     const { token } = req.query;
     try {
         const result = query(veryfyTokenQuery, [token]);
@@ -167,5 +179,31 @@ export async function verifyToken(req, res) {
     } catch (error) {
         console.error("Error verifying token:", error);
         return res.status(500).json({ valid: false, message: "Server error" });
+    }
+}
+
+export async function refreshToken(req, res) {
+    const { token } = req.body;
+
+    if (!token) {
+        return res.status(401).json({ message: "Refresh token required." });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET_KEY);
+
+        // Issue a new access token
+        const newAccessToken = jwt.sign(
+            { id: decoded.id, email: decoded.email, name: decoded.name },
+            process.env.JWT_ACCESS_SECRET_KEY,
+            { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1h" }
+        );
+
+        res.status(200).json({
+            status: 200,
+            access_token: newAccessToken,
+        });
+    } catch (error) {
+        return res.status(403).json({ message: "Invalid or expired refresh token." });
     }
 }

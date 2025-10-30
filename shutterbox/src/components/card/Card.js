@@ -5,21 +5,22 @@ function Card({ postId, image, title, description, likeCount, dislikeCount, hasL
 
     const [likes, setLikes] = useState(likeCount || 0);
     const [dislikes, setDislikes] = useState(dislikeCount || 0);
-    const [userReaction, setUserReaction] = useState(hasLiked == true ? "like" : hasLiked == false ? "dislike" : null); // "like" | "dislike" | null
+    const [userReaction, setUserReaction] = useState(hasLiked == true ? "like" : hasLiked == false ? "dislike" : null);
 
     const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
     const convertImage = arrayBufferToBase64(image.data);
     const imageSrc = `data:image/png;base64,${convertImage}`;
-
-    console.log("hasLiked", hasLiked);
-
 
     const reactToPost = async (type) => {
         try {
             const response = await fetch(`http://localhost:5000/post/${postId}/reaction`,
                 {
                     method: 'POST',
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
                     body: JSON.stringify({
                         postId,
                         userId,
@@ -27,6 +28,15 @@ function Card({ postId, image, title, description, likeCount, dislikeCount, hasL
                     }),
                 }
             );
+            if (response.status === 403 || response.status === 401) {
+                const data = await response.json();
+
+                if (data.message === "Access denied. No token provided." || data.message === "Invalid or expired token.") {
+                    sessionStorage.clear();
+                    navigate("/");
+                    return;
+                }
+            }
             const data = await response.json();
             setLikes(data.likesCount);
             setDislikes(data.dislikeCount);

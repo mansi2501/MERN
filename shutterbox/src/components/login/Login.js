@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useFormik } from "formik";
 import { LoginSchema } from "../../schema";
+// import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -26,10 +27,33 @@ function Login() {
                         password: values.password,
                     }),
                 });
-                // alert(JSON.stringify(values, null, 2));
                 const data = await response.json();
-                sessionStorage.setItem("username", data?.user?.name)
-                sessionStorage.setItem("userId", data?.user?.id)
+                console.log("data", response.ok, !response.ok, response);
+
+                console.log("d++", data);
+
+
+                // toast.success("hjhj")
+                // if (!response.ok) {
+                //     console.log("in if");
+
+
+                //     toast.error("sdajsdkasjk")
+                //     toast.error(data.message || "Login Failed!", {
+                //         position: "top-left",
+                //         autoClose: 3000
+                //     });
+                //     return;
+                // }
+
+                // toast.success("Login Successful!", { position: "top-left", autoClose: 2000 })
+
+                const decodeToken = jwtDecode(data?.access_token);
+
+                sessionStorage.setItem("token", data?.access_token)
+                sessionStorage.setItem("refresh_token", data?.refresh_token)
+                sessionStorage.setItem("username", decodeToken?.name)
+                sessionStorage.setItem("userId", decodeToken?.id)
 
                 if (response.status === 200) {
                     navigate("/dashboard");
@@ -39,6 +63,10 @@ function Login() {
                     navigate("/");
                 }
             } catch (error) {
+                // toast.error("Server not responding!", {
+                //     position: "top-center",
+                //     autoClose: 3000,
+                // });
                 console.error("Error: ", error);
                 alert("Login Failed!!!");
             }

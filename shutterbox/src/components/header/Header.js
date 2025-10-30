@@ -43,7 +43,8 @@ function Header() {
                                         onClick={() => {
                                             sessionStorage.removeItem("userId");
                                             sessionStorage.removeItem("username");// clear login info
-                                            // sessionStorage.removeItem("token"); // if using tokens
+                                            sessionStorage.removeItem("token");
+                                            sessionStorage.removeItem("refresh_token");// if using tokens
                                             window.location.href = "/"; // redirect to login
                                         }}
                                     >
